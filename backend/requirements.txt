@@ -1,0 +1,12 @@
+fastapi==0.141.1
+uvicorn[standard]==0.54.0
+SQLAlchemy==2.1.1
+psycopg[binary]==3.3.6
+pgvector==0.5.0
+pydantic-settings==2.15.0
+groq==1.7.0
+httpx==0.28.1
+youtube-transcript-api==1.2.4
+fastembed==0.8.1
+numpy==2.5.3
+python-multipart==0.0.32

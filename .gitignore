@@ -1,0 +1,10 @@
+.env
+
+# Python
+backend/.venv/
+__pycache__/
+*.pyc
+backend/.model_cache/
+
+# Node (frontend/.gitignore covers the rest)
+node_modules/
