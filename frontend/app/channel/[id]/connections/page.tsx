@@ -80,20 +80,20 @@ export default function ConnectionsPage() {
                   graphData={data}
                   width={width}
                   height={560}
-                  backgroundColor="#13131b"
+                  backgroundColor="#ffffff"
                   nodeRelSize={4}
                   nodeVal={(n) => 1 + (Math.log10(1 + (n as Node).views) / Math.log10(1 + maxViews)) * 6}
                   nodeColor={(n) => {
                     const node = n as Node;
-                    if (!selected) return "#8b5cf6";
-                    if (node.id === selected.id) return "#fbbf24";
-                    return neighbours.has(node.id) ? "#a78bfa" : "#3a3a4a";
+                    if (!selected) return "#7c3aed";
+                    if (node.id === selected.id) return "#d97706";
+                    return neighbours.has(node.id) ? "#a78bfa" : "#d6d6e0";
                   }}
                   linkColor={(l) => {
-                    if (!selected) return "rgba(148,148,170,0.25)";
+                    if (!selected) return "rgba(106,106,126,0.3)";
                     const s = (l.source as Node).id;
                     const t = (l.target as Node).id;
-                    return s === selected.id || t === selected.id ? "rgba(251,191,36,0.7)" : "rgba(148,148,170,0.08)";
+                    return s === selected.id || t === selected.id ? "rgba(217,119,6,0.75)" : "rgba(106,106,126,0.08)";
                   }}
                   linkWidth={(l) => 0.5 + ((l as { similarity: number }).similarity - 0.6) * 6}
                   onNodeClick={(n) => select(n as Node)}

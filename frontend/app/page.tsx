@@ -51,7 +51,7 @@ export default function Home() {
   const running = job && (job.status === "queued" || job.status === "running");
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-12 sm:py-20">
+    <main className="mx-auto w-full max-w-[1760px] px-4 py-8 sm:px-6 sm:py-12 lg:px-10">
       <div className="flex items-center gap-2 text-sm text-muted">
         <Brain className="size-5 text-accent" /> Creator Second Brain
       </div>
@@ -64,13 +64,13 @@ export default function Home() {
       </p>
 
       {health && (!health.youtube_key || !health.groq_key) && (
-        <div className="mt-8 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-warn">
+        <div className="mt-6 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-warn">
           Missing in <code>.env</code>: {[!health.youtube_key && "YOUTUBE_API_KEY", !health.groq_key && "GROQ_API_KEY"].filter(Boolean).join(", ")}.
           Add {!health.youtube_key && !health.groq_key ? "them" : "it"} and restart the backend.
         </div>
       )}
 
-      <Card className="mt-8 p-5">
+      <Card className="mt-6 p-5">
         <form onSubmit={start} className="flex flex-col gap-3 sm:flex-row">
           <input
             className={inputCls}
@@ -108,7 +108,7 @@ export default function Home() {
       </Card>
 
       {channels.length > 0 && (
-        <section className="mt-10">
+        <section className="mt-8">
           <h2 className="mb-3 text-sm font-medium text-muted">Your channels</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {channels.map((c) => (
@@ -128,7 +128,7 @@ export default function Home() {
         </section>
       )}
 
-      <section className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {FEATURES.map(({ icon: Icon, title, text }) => (
           <div key={title} className="rounded-xl border border-line p-4">
             <Icon className="size-5 text-accent" />

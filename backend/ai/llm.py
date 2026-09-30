@@ -5,6 +5,7 @@ import threading
 import time
 
 from groq import APIConnectionError, APIStatusError, Groq, RateLimitError
+from langsmith import traceable
 
 from config import settings
 
@@ -15,6 +16,10 @@ class LLMConfigError(Exception):
 
 class LLMError(Exception):
     pass
+
+
+class LLMDailyLimit(LLMError):
+    """Groq's tokens-per-day cap is used up — retrying within minutes can't help."""
 
 
 _client: Groq | None = None
@@ -38,6 +43,7 @@ def _retry_after(err: RateLimitError, attempt: int) -> float:
         return min(5 * 2**attempt, 90)
 
 
+@traceable(name="Groq JSON call", run_type="llm")
 def chat_json(
     system: str,
     user: str,
@@ -49,6 +55,11 @@ def chat_json(
     """Call Groq in JSON mode and return the parsed object. The prompt must mention JSON."""
     client = _get_client()
     model = model or settings.llm_model
+    extra = {}
+    if "gpt-oss" in model:
+        # reasoning models: hidden reasoning tokens count against the output budget
+        extra = {"reasoning_effort": "low"}
+        max_tokens += 2000
     bad_json = 0
     for attempt in range(attempts):
         try:
@@ -58,8 +69,13 @@ def chat_json(
                 response_format={"type": "json_object"},
                 temperature=temperature,
                 max_completion_tokens=max_tokens,
+                **extra,
             )
         except RateLimitError as e:
+            if "(TPD)" in str(e):
+                from agents.llm import as_app_error  # one place builds the user-facing message
+
+                raise as_app_error(e) from e
             time.sleep(_retry_after(e, attempt))
             continue
         except APIConnectionError:
@@ -68,6 +84,11 @@ def chat_json(
         except APIStatusError as e:
             if e.status_code == 401:
                 raise LLMConfigError("GROQ_API_KEY is invalid") from e
+            if e.status_code == 404 and "model" in str(e):
+                raise LLMConfigError(
+                    f"Groq model '{model}' is not available — set LLM_MODEL / LLM_FAST_MODEL in .env "
+                    "to a model listed at console.groq.com/docs/models"
+                ) from e
             # retry server errors, and 400 json_validate_failed (model produced malformed JSON)
             if e.status_code >= 500 or (e.status_code == 400 and "json" in str(e).lower()):
                 bad_json += 1

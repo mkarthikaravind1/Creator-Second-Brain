@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Bot,
   Brain,
   Clapperboard,
   GitCompareArrows,
@@ -21,6 +22,7 @@ import { ChannelContext } from "@/lib/channel-context";
 
 const TABS = [
   { href: "", label: "Ask", icon: MessageCircleQuestion },
+  { href: "/brain", label: "Brain", icon: Bot },
   { href: "/reels", label: "Reels", icon: Clapperboard },
   { href: "/promises", label: "Promise Ledger", icon: Handshake },
   { href: "/drift", label: "Opinion Drift", icon: GitCompareArrows },
@@ -69,7 +71,7 @@ export default function ChannelLayout({ children }: { children: ReactNode }) {
   return (
     <ChannelContext.Provider value={{ channelId: id, overview, refresh }}>
       <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 pt-4">
+        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 pt-3 sm:px-6">
           <Link href="/" className="text-muted hover:text-ink" aria-label="Home">
             <Brain className="size-5 text-accent" />
           </Link>
@@ -87,7 +89,7 @@ export default function ChannelLayout({ children }: { children: ReactNode }) {
             <RefreshCw className={cn("size-3.5", running && "animate-spin")} /> <span className="hidden sm:inline">Re-index</span>
           </Button>
         </div>
-        <nav className="scroll-thin mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pt-3">
+        <nav className="scroll-thin mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 pt-2 sm:px-6">
           {TABS.map(({ href, label, icon: Icon }) => {
             const full = base + href;
             const active = href === "" ? pathname === base : pathname.startsWith(full);
@@ -106,10 +108,10 @@ export default function ChannelLayout({ children }: { children: ReactNode }) {
           })}
         </nav>
       </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
         <ErrorNote error={error} />
         {job && (running || job.status === "failed") && (
-          <div className="mb-6">
+          <div className="mb-5">
             <JobProgress job={job} />
           </div>
         )}

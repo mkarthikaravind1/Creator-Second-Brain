@@ -89,7 +89,7 @@ export default function AskPage() {
       </div>
 
       {!result && !loading && !error && (
-        <div className="mt-8">
+        <div className="mt-6">
           <Empty icon={<MessageCircleQuestion className="size-8" />} title="Your back catalogue, one question away">
             Search is semantic: ask about ideas, not keywords. &ldquo;Staying consistent&rdquo; will find the moment you said &ldquo;I almost quit
             posting in 2023&rdquo;.
@@ -129,11 +129,11 @@ export default function AskPage() {
                 >
                   <div className="relative shrink-0">
                     <Thumb src={s.thumbnail} className="h-16 w-28" />
-                    <span className="absolute bottom-1 right-1 rounded bg-black/80 px-1 text-[10px] font-medium">{s.timestamp}</span>
+                    <span className="absolute bottom-1 right-1 rounded bg-black/80 px-1 text-white text-[10px] font-medium">{s.timestamp}</span>
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-violet-300">[{s.n}]</span>
+                      <span className="text-xs font-semibold text-violet-700">[{s.n}]</span>
                       <p className="truncate text-sm font-medium">{s.title}</p>
                       {s.cited && <Badge tone="accent">cited</Badge>}
                     </div>

@@ -140,7 +140,7 @@ export default function ComposePage() {
                 />
                 {comp.hook_overlay && index === 0 && (
                   <div className="pointer-events-none absolute inset-x-0 top-4 flex justify-center px-6">
-                    <span className="rounded-lg bg-black/75 px-3 py-1.5 text-center text-sm font-semibold">{comp.hook_overlay}</span>
+                    <span className="rounded-lg bg-black/75 px-3 py-1.5 text-white text-center text-sm font-semibold">{comp.hook_overlay}</span>
                   </div>
                 )}
               </div>

@@ -33,6 +33,7 @@ export const api = {
   post: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: "POST", body: body === undefined ? undefined : JSON.stringify(body) }),
   patch: <T>(path: string, body: unknown) => request<T>(path, { method: "PATCH", body: JSON.stringify(body) }),
+  delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
   upload: <T>(path: string, file: File) => {
     const form = new FormData();
     form.append("file", file);
@@ -205,3 +206,87 @@ export const fmtDate = (iso: string) =>
 
 export const fmtViews = (n: number) =>
   n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : n >= 1e3 ? `${(n / 1e3).toFixed(1)}K` : `${n}`;
+
+// ---------- Brain chat (agent) ----------
+
+export type ChatStep = { agent: string; tool: string; detail: string };
+
+export type ChatCard =
+  | { kind: "ask"; agent: string; data: AskResult }
+  | { kind: "compose"; agent: string; data: Composition }
+  | { kind: "drift"; agent: string; data: DriftResult }
+  | { kind: "promises"; agent: string; data: { promises: ChatPromise[] } }
+  | { kind: "videos"; agent: string; data: { videos: ChatVideo[] } };
+
+export type ChatPromise = {
+  id: number;
+  promise: string;
+  status: "open" | "fulfilled" | "dismissed";
+  evidence: string;
+  video_id: string;
+  title: string;
+  thumbnail: string | null;
+  published_at: string;
+  timestamp: string;
+  url: string;
+};
+
+export type ChatVideo = { video_id: string; title: string; thumbnail: string | null; published_at: string; url: string };
+
+export type ChatMessage = { role: "user" | "assistant"; content: string; cards?: ChatCard[]; steps?: ChatStep[] };
+
+export type ChatThread = { id: string; title: string; created_at: string | null; updated_at: string | null };
+
+export type ChatEvent =
+  | { type: "thread"; thread_id: string }
+  | ({ type: "step" } & ChatStep)
+  | { type: "token"; text: string }
+  | ({ type: "card" } & ChatCard)
+  | { type: "final"; thread_id: string; message: string }
+  | { type: "error"; message: string };
+
+/** POST a chat turn and call `onEvent` for each Server-Sent Event until the stream ends. */
+export async function streamChat(
+  channelId: string,
+  message: string,
+  threadId: string | null,
+  onEvent: (e: ChatEvent) => void,
+  signal?: AbortSignal,
+): Promise<void> {
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}/api/channels/${channelId}/agent/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, thread_id: threadId }),
+      signal,
+    });
+  } catch (e) {
+    if ((e as Error).name === "AbortError") throw e;
+    throw new ApiError(`Can't reach the backend at ${API_URL}. Is it running?`, 0);
+  }
+  if (!res.ok || !res.body) {
+    let detail = res.statusText;
+    try {
+      const body = await res.json();
+      detail = typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail);
+    } catch {}
+    throw new ApiError(detail, res.status);
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let cut: number;
+    while ((cut = buffer.indexOf("\n\n")) >= 0) {
+      const frame = buffer.slice(0, cut);
+      buffer = buffer.slice(cut + 2);
+      for (const line of frame.split("\n")) {
+        if (line.startsWith("data: ")) onEvent(JSON.parse(line.slice(6)) as ChatEvent);
+      }
+    }
+  }
+}

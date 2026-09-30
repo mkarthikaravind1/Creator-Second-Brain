@@ -4,9 +4,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from api.agent import router as agent_router
 from api.routes import router
 from config import settings
-from db import init_db
+from db import fail_interrupted_jobs, init_db
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
@@ -14,6 +15,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    fail_interrupted_jobs()
     yield
 
 
@@ -25,6 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(router)
+app.include_router(agent_router)
 
 
 @app.get("/api/health")
@@ -34,4 +37,5 @@ def health():
         "youtube_key": bool(settings.youtube_api_key),
         "groq_key": bool(settings.groq_api_key),
         "llm_model": settings.llm_model,
+        "langsmith_tracing": settings.langsmith_tracing and bool(settings.langsmith_api_key),
     }

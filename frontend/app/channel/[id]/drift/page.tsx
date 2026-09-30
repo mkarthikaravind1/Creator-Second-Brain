@@ -101,7 +101,7 @@ export default function DriftPage() {
               title={`${t.mentions} opinions across ${t.videos} videos`}
             >
               {t.topic}
-              {t.videos > 1 && <span className="ml-1 text-violet-300">×{t.videos}</span>}
+              {t.videos > 1 && <span className="ml-1 text-violet-700">×{t.videos}</span>}
             </button>
           ))}
         </div>

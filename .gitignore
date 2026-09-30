@@ -8,3 +8,9 @@ backend/.model_cache/
 
 # Node (frontend/.gitignore covers the rest)
 node_modules/
+
+# Agent chat history (LangGraph checkpoints)
+backend/data/
+
+# Local clone of the course fork (pushed separately)
+ASADI_Protosem01/

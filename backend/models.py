@@ -116,3 +116,15 @@ class Stance(Base):
     stance: Mapped[str] = mapped_column(Text)
     quote: Mapped[str] = mapped_column(Text)
     embedding = mapped_column(Vector(DIM), nullable=True)
+
+
+class AgentThread(Base):
+    """A Brain chat conversation. Messages live in the LangGraph SQLite checkpointer, keyed by this id."""
+
+    __tablename__ = "agent_threads"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)  # uuid4 hex, also the LangGraph thread_id
+    channel_id: Mapped[str] = mapped_column(ForeignKey("channels.id", ondelete="CASCADE"), index=True)
+    title: Mapped[str] = mapped_column(String, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
