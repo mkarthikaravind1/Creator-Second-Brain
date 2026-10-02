@@ -10,22 +10,21 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=ROOT_DIR / ".env", extra="ignore")
 
     youtube_api_key: str = ""
-    groq_api_key: str = ""
+    gemini_api_key: str = ""
+    groq_api_key: str = ""  # only for Whisper transcription of uploaded audio
 
     # pg8000 is pure Python — Windows Smart App Control blocks psycopg's compiled driver
     database_url: str = "postgresql+pg8000://brain:brain@localhost:5433/brain"
 
-    # Groq models — check console.groq.com/docs/models and override in .env if these change.
-    llm_model: str = "openai/gpt-oss-120b"  # reasoning: analysis, answers, drift, composer
-    llm_fast_model: str = "openai/gpt-oss-20b"  # bulk: promise verification
+    # Gemini models — check ai.google.dev/gemini-api/docs/models and override in .env if these change.
+    llm_model: str = "gemini-3.5-flash-lite"  # reasoning: analysis, answers, drift, composer
+    llm_fast_model: str = "gemini-3.5-flash-lite"  # bulk: promise verification
 
-    # Agent token budget. Groq's free tier allows 8000 tokens per request-minute on gpt-oss-120b, and it
-    # counts the output reservation too — so input context + max output must stay under that. Raise both
-    # on a paid tier.
-    agent_max_output_tokens: int = 1500
-    agent_context_tokens: int = 4000  # older tool results are cleared from an agent's context beyond this
+    # Agent token budget. Gemini's thinking tokens count against max output, so leave room for them.
+    agent_max_output_tokens: int = 4000
+    agent_context_tokens: int = 12000  # older tool results are cleared from an agent's context beyond this
 
-    whisper_model: str = "whisper-large-v3-turbo"  # for uploaded audio files
+    whisper_model: str = "whisper-large-v3-turbo"  # Groq Whisper, for uploaded audio files
 
     # Optional http(s) proxy for transcript fetching if YouTube blocks your IP,
     # e.g. http://user:pass@proxy-host:port
@@ -36,10 +35,11 @@ class Settings(BaseSettings):
 
     max_videos: int = 50  # per channel index run
     chunk_seconds: int = 45
-    # transcript slice per analysis call — ~2.3K tokens, so slice + output reservation fit 8K tokens/min
-    analysis_segment_chars: int = 9000
+    # transcript slice per analysis call (~7.5K tokens). Bigger slices mean fewer requests, which matters
+    # more on Gemini's free tier than tokens per minute.
+    analysis_segment_chars: int = 30000
 
-    frontend_origin: str = "http://localhost:3000"
+    frontend_origin: str = "http://localhost:3001"
 
     # LangSmith tracing (optional): every agent, tool call and indexing step shows up as a trace tree.
     # Note: traces include prompts and transcript excerpts, sent to LangSmith's servers.

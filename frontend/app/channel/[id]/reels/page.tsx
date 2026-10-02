@@ -77,7 +77,7 @@ export default function ReelsPage() {
         <Spinner label="Loading reel ideas…" />
       ) : reels.length === 0 ? (
         <Empty icon={<Clapperboard className="size-8" />} title="No reel candidates yet">
-          They are generated during AI analysis. If indexing finished, check that GROQ_API_KEY is set and re-index.
+          They are generated during AI analysis. If indexing finished, check that GEMINI_API_KEY is set and re-index.
         </Empty>
       ) : (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[380px_1fr]">

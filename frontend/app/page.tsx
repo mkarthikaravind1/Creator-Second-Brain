@@ -22,7 +22,7 @@ export default function Home() {
   const [health, setHealth] = useState<Health | null>(null);
   const [channels, setChannels] = useState<ChannelSummary[]>([]);
   const [input, setInput] = useState("");
-  const [maxVideos, setMaxVideos] = useState(30);
+  const [maxVideos, setMaxVideos] = useState(5);
   const [jobId, setJobId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -63,10 +63,10 @@ export default function Home() {
         track your promises and see how your opinions evolved.
       </p>
 
-      {health && (!health.youtube_key || !health.groq_key) && (
+      {health && (!health.youtube_key || !health.gemini_key) && (
         <div className="mt-6 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-warn">
-          Missing in <code>.env</code>: {[!health.youtube_key && "YOUTUBE_API_KEY", !health.groq_key && "GROQ_API_KEY"].filter(Boolean).join(", ")}.
-          Add {!health.youtube_key && !health.groq_key ? "them" : "it"} and restart the backend.
+          Missing in <code>.env</code>: {[!health.youtube_key && "YOUTUBE_API_KEY", !health.gemini_key && "GEMINI_API_KEY"].filter(Boolean).join(", ")}.
+          Add {!health.youtube_key && !health.gemini_key ? "them" : "it"} and restart the backend.
         </div>
       )}
 
@@ -86,7 +86,7 @@ export default function Home() {
             disabled={!!running}
             aria-label="Number of latest videos to index"
           >
-            {[10, 30, 50, 100, 200].map((n) => (
+            {[2, 5, 10, 30, 50, 100, 200].map((n) => (
               <option key={n} value={n}>
                 Latest {n} videos
               </option>

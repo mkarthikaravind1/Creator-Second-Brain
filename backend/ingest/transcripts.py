@@ -85,9 +85,13 @@ def parse_subtitles(content: str) -> list[dict]:
 
 
 def transcribe_audio(filename: str, data: bytes) -> list[dict]:
-    from ai.llm import _get_client
+    from groq import Groq
 
-    result = _get_client().audio.transcriptions.create(
+    from ai.llm import LLMConfigError
+
+    if not settings.groq_api_key:
+        raise LLMConfigError("GROQ_API_KEY is not set in .env (needed for audio transcription)")
+    result = Groq(api_key=settings.groq_api_key).audio.transcriptions.create(
         file=(filename, data), model=settings.whisper_model, response_format="verbose_json"
     )
     segments = getattr(result, "segments", None)

@@ -43,9 +43,8 @@ Rules:
   from different videos can be matched (e.g. "used cameras", "morning routine", "index funds").
 - Copy quotes verbatim from the transcript. Never invent timestamps."""
 
-# Output reservation for one slice. With gpt-oss, chat_json adds 2000 for hidden reasoning; together with
-# the slice (settings.analysis_segment_chars) this keeps each request under Groq's free-tier 8K tokens/min.
-MAX_OUTPUT_TOKENS = 2000
+# Output reservation for one slice (chat_json adds 2000 more for Gemini's thinking tokens).
+MAX_OUTPUT_TOKENS = 3000
 
 
 # ---------- structured output ----------

@@ -251,7 +251,7 @@ export default function BrainPage() {
                   ))}
                 </div>
                 <p className="mt-4 text-xs text-muted">
-                  Answers come only from your own videos. Multi-step questions can take a minute on Groq&apos;s free tier.
+                  Answers come only from your own videos. Multi-step questions can take a minute on Gemini&apos;s free tier.
                 </p>
               </Card>
             )}

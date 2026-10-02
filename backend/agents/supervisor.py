@@ -58,7 +58,7 @@ def _run(runtime: ToolRuntime[AgentContext], agent: str, detail: str, fn) -> tup
     except LLMConfigError:
         raise  # a missing/invalid key is the creator's to fix — surface it, don't paper over it
     except Exception as e:  # noqa: BLE001 — the Brain reports the failure and answers with what it has
-        log.warning("%s failed: %r", agent, e)  # repr keeps Groq's own message (which limit: TPM vs TPD)
+        log.warning("%s failed: %r", agent, e)  # repr keeps Gemini's own message (which quota was hit)
         return f"The {agent} failed ({as_app_error(e)}). Tell the creator and suggest trying again.", None
     if card is not None:
         card = {"kind": card["kind"], "agent": agent, "data": card["data"]}
@@ -212,7 +212,7 @@ def brain():
                 system_prompt=SYSTEM,
                 context_schema=AgentContext,
                 middleware=[
-                    # keep long threads inside Groq's token-per-minute budget
+                    # keep long threads inside the agent token budget
                     SummarizationMiddleware(chat_model(fast=True), trigger=("tokens", settings.agent_context_tokens), keep=("messages", 10)),
                     *guardrails(model_calls=6, tool_calls=5),
                 ],

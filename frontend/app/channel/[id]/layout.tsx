@@ -3,14 +3,17 @@
 import {
   Bot,
   Brain,
+  Briefcase,
   Clapperboard,
-  GitCompareArrows,
-  Handshake,
+  Compass,
+  Lightbulb,
   ListVideo,
   MessageCircleQuestion,
-  Network,
+  PenTool,
   RefreshCw,
+  Repeat,
   Sparkles,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
@@ -21,13 +24,16 @@ import { api, type ChannelOverview, type Job } from "@/lib/api";
 import { ChannelContext } from "@/lib/channel-context";
 
 const TABS = [
-  { href: "", label: "Ask", icon: MessageCircleQuestion },
-  { href: "/brain", label: "Brain", icon: Bot },
-  { href: "/reels", label: "Reels", icon: Clapperboard },
-  { href: "/promises", label: "Promise Ledger", icon: Handshake },
-  { href: "/drift", label: "Opinion Drift", icon: GitCompareArrows },
-  { href: "/compose", label: "Ghost Clips", icon: Sparkles },
-  { href: "/connections", label: "Connections", icon: Network },
+  { href: "/brain", label: "Brain AI", icon: Bot },
+  { href: "/idealab", label: "IdeaLab", icon: Lightbulb },
+  { href: "/write", label: "Write Studio", icon: PenTool },
+  { href: "/production", label: "Production", icon: Clapperboard },
+  { href: "/strategy", label: "Strategy Hub", icon: Compass },
+  { href: "/repurpose", label: "Repurpose", icon: Repeat },
+  { href: "/audience", label: "Audience Intel", icon: Users },
+  { href: "/business", label: "Business Suite", icon: Briefcase },
+  { href: "", label: "Ask Grounding", icon: MessageCircleQuestion },
+  { href: "/reels", label: "Catalog Reels", icon: Sparkles },
   { href: "/videos", label: "Videos", icon: ListVideo },
 ];
 

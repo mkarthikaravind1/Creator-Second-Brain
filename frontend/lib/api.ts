@@ -1,4 +1,4 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8001";
 
 export class ApiError extends Error {
   constructor(message: string, public status: number) {
@@ -52,7 +52,7 @@ export function downloadText(filename: string, text: string) {
 
 // ---------- types ----------
 
-export type Health = { ok: boolean; youtube_key: boolean; groq_key: boolean; llm_model: string };
+export type Health = { ok: boolean; youtube_key: boolean; gemini_key: boolean; groq_key: boolean; llm_model: string };
 
 export type Job = {
   id: number;

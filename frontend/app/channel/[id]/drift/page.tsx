@@ -121,7 +121,7 @@ export default function DriftPage() {
             <Empty icon={<GitCompareArrows className="size-8" />} title={topics.length ? "Pick a topic to trace" : "No opinions extracted yet"}>
               {topics.length
                 ? "Topics marked ×N appear in several videos — the best candidates for drift."
-                : "Opinions are extracted during AI analysis. Make sure GROQ_API_KEY is set and re-index."}
+                : "Opinions are extracted during AI analysis. Make sure GEMINI_API_KEY is set and re-index."}
             </Empty>
           )}
         </div>

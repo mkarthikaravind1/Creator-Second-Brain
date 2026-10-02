@@ -13,14 +13,14 @@ A second brain for YouTube creators: index a channel's transcripts, then ask que
 
 ## Stack
 
-FastAPI · PostgreSQL + pgvector · BGE embeddings (local, via fastembed) · Groq (Llama 3.3 70B, Whisper) · Next.js 16 + Tailwind · Recharts · react-force-graph · YouTube Data API v3 + IFrame Player API
+FastAPI · PostgreSQL + pgvector · BGE embeddings (local, via fastembed) · Gemini (LLM) · Groq Whisper (audio uploads) · Next.js 16 + Tailwind · Recharts · react-force-graph · YouTube Data API v3 + IFrame Player API
 
 ```
 backend/
   main.py, config.py, db.py, models.py
   ingest/   youtube.py (Data API), transcripts.py (captions, .srt/.vtt, Whisper, chunking), pipeline.py (background jobs)
   search/   embeddings.py, vector.py (pgvector queries), graph.py
-  ai/       llm.py (Groq JSON + retry), analyze.py (reels/promises/stances per video),
+  ai/       llm.py (Gemini JSON + retry), analyze.py (reels/promises/stances per video),
             ask.py, promises.py, drift.py, compose.py (+ EDL export)
   api/      routes.py
 frontend/
@@ -33,20 +33,20 @@ frontend/
 
 Prerequisites: Docker Desktop, Python 3.12, Node 20+.
 
-1. **Keys.** Copy `.env.example` to `.env` and fill in `YOUTUBE_API_KEY` (Google Cloud Console → YouTube Data API v3) and `GROQ_API_KEY` (console.groq.com).
+1. **Keys.** Copy `.env.example` to `.env` and fill in `YOUTUBE_API_KEY` (Google Cloud Console → YouTube Data API v3) , `GEMINI_API_KEY` (aistudio.google.com/apikey) and, for audio uploads only, `GROQ_API_KEY` (console.groq.com).
 2. **Database.**
    ```bash
    docker compose up -d
    ```
 3. **Backend** (first run only: `py -3.12 -m venv backend/.venv` then `backend/.venv/Scripts/pip install -r backend/requirements.txt`):
    ```bash
-   backend/.venv/Scripts/python -m uvicorn main:app --app-dir backend --port 8000
+   backend/.venv/Scripts/python -m uvicorn main:app --app-dir backend --port 8001
    ```
 4. **Frontend** (first run only: `npm install --prefix frontend`):
    ```bash
    npm run dev --prefix frontend
    ```
-5. Open http://localhost:3000, paste a channel URL, and click **Build my brain**.
+5. Open http://localhost:3001, paste a channel URL, and click **Build my brain**.
 
 The first run downloads the embedding model (~70 MB) into `backend/.model_cache`.
 
@@ -54,11 +54,11 @@ The first run downloads the embedding model (~70 MB) into `backend/.model_cache`
 
 1. Resolve the channel and list its latest N uploads (YouTube Data API).
 2. Fetch timestamped captions, then split them into ~45 s chunks. Each chunk keeps line-level timestamps so clips can be cut precisely.
-3. Embed each chunk locally with BGE-small (384-dim) and store it in pgvector. Search works from this point on, even without Groq.
-4. Make one Groq call per video (more for long videos) to extract reel candidates, promises and stances as JSON.
+3. Embed each chunk locally with BGE-small (384-dim) and store it in pgvector. Search works from this point on, even without Gemini.
+4. Make one Gemini call per video (more for long videos) to extract reel candidates, promises and stances as JSON.
 5. Match each promise against later videos by vector search, then have the LLM verify it.
 
-Rate limits on Groq's free tier are handled with automatic backoff. A 50-video channel can take a while on the free tier, and the progress bar shows each stage.
+Rate limits on Gemini's free tier are handled with automatic backoff. A 50-video channel can take a while on the free tier, and the progress bar shows each stage.
 
 ## Known limitations
 
